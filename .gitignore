@@ -1,0 +1,25 @@
+# Java / Maven
+target/
+*.class
+*.jar
+*.war
+
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform/
+*.tfvars
+
+# Secrets - NEVER commit these
+*.pem
+*.key
+.env
+*credentials*
+*secret*
+
+# OS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
