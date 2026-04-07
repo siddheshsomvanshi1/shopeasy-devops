@@ -40,6 +40,15 @@ pipeline {
             }
         }
 
+        stage('Invalidate CloudFront') {
+            steps {
+                script {
+                    def DISTRIBUTION_ID = 'ENBKJVY3R087Z'
+                    sh "aws cloudfront create-invalidation --distribution-id ${DISTRIBUTION_ID} --paths '/*'"
+                }
+            }
+        }
+
         stage('Build & Push Backend') {
             steps {
                 dir('app') {
