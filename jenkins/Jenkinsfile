@@ -1,0 +1,65 @@
+pipeline { 
+    agent any 
+
+    environment { 
+        AWS_ACCOUNT_ID = '420905172627' 
+        AWS_REGION     = 'us-east-1' 
+        IMAGE_NAME     = 'shopeasy' 
+        IMAGE_TAG      = "${BUILD_NUMBER}" 
+        ECR_URI        = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${IMAGE_NAME}" 
+        
+        // RDS Details 
+        DB_ENDPOINT    = 'shopeasy-db.cg38ggqq8x6r.us-east-1.rds.amazonaws.com' 
+        DB_USERNAME    = 'admin' 
+        DB_PASSWORD    = 'shopeasy_password_123' 
+        
+        // App Server Details 
+        APP_SERVER_IP  = '52.205.250.123' 
+    } 
+
+    stages { 
+        stage('Checkout') { 
+            steps { 
+                git branch: 'main', url: 'https://github.com/siddheshsomvanshi1/shopeasy-devops.git' 
+            } 
+        } 
+
+        stage('Build & Test') { 
+            steps { 
+                dir('app') { 
+                    sh 'mvn clean package -DskipTests' 
+                } 
+            } 
+        } 
+
+        stage('Docker Build') { 
+            steps { 
+                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} -f docker/Dockerfile ." 
+            } 
+        } 
+
+        stage('ECR Login & Push') { 
+            steps { 
+                sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com" 
+                sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${ECR_URI}:${IMAGE_TAG}" 
+                sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${ECR_URI}:latest" 
+                sh "docker push ${ECR_URI}:${IMAGE_TAG}" 
+                sh "docker push ${ECR_URI}:latest" 
+            } 
+        } 
+
+        stage('Deploy to App Server') { 
+            steps { 
+                sh """ 
+                ssh -o StrictHostKeyChecking=no ubuntu@${APP_SERVER_IP} " 
+                    aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com && 
+                    docker stop shopeasy-app || true && 
+                    docker rm shopeasy-app || true && 
+                    docker pull ${ECR_URI}:latest && 
+                    docker run -d --name shopeasy-app -p 8080:8080 -e DB_ENDPOINT=${DB_ENDPOINT} -e DB_USERNAME=${DB_USERNAME} -e DB_PASSWORD=${DB_PASSWORD} ${ECR_URI}:latest 
+                " 
+                """ 
+            } 
+        } 
+    } 
+}
