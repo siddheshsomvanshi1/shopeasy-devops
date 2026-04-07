@@ -6,8 +6,8 @@ const App = () => {
   const [backendStatus, setBackendStatus] = useState('Checking...');
   const [loading, setLoading] = useState(true);
 
-  // Replace with your actual App Server IP
-  const BACKEND_URL = 'http://52.205.250.123:8080';
+  // Use relative path so CloudFront can proxy requests
+  const BACKEND_URL = window.location.origin;
 
   useEffect(() => {
     // Check Backend Health
