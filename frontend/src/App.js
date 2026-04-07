@@ -32,7 +32,7 @@ const App = () => {
           { id: 3, name: 'Smart Watch', price: 249.99, category: 'Wearables' }
         ]);
       });
-  }, []);
+  }, [BACKEND_URL]);
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
