@@ -30,6 +30,48 @@ This project implements a highly available, scalable, and secure architecture:
 
 ---
 
+## 📸 Proof of Work (AWS Infrastructure)
+
+Below are the visual proofs of the implemented services and successful deployment.
+
+### **1. Frontend & CDN**
+| Service | Evidence |
+| :--- | :--- |
+| **Live Website** | ![Website](AWS-Services-Images/website.png) |
+| **CloudFront Distribution** | ![CloudFront](AWS-Services-Images/CloudFront.png) |
+| **S3 Bucket (Static Hosting)** | ![S3](AWS-Services-Images/S3.png) |
+
+### **2. Backend & Scalability**
+| Service | Evidence |
+| :--- | :--- |
+| **Load Balancer (ALB)** | ![ALB](AWS-Services-Images/ALB.png) |
+| **Target Group** | ![Target Group](AWS-Services-Images/TargetGroup.png) |
+| **Auto Scaling Group** | ![ASG](AWS-Services-Images/ASG.png) |
+| **Launch Template** | ![Launch Template](AWS-Services-Images/Launch%20Template.png) |
+| **EC2 Instances** | ![Instances](AWS-Services-Images/Instances.png) |
+
+### **3. Database & Registry**
+| Service | Evidence |
+| :--- | :--- |
+| **Amazon RDS (MySQL)** | ![RDS](AWS-Services-Images/RDS.png) |
+| **Amazon ECR** | ![ECR](AWS-Services-Images/ECR.png) |
+
+### **4. CI/CD & Automation**
+| Service | Evidence |
+| :--- | :--- |
+| **Jenkins Pipeline** | ![Jenkins](AWS-Services-Images/jenkins.png) |
+| **IAM Roles & Permissions** | ![IAM Roles](AWS-Services-Images/IAMRoles.png) |
+| **Security Groups** | ![Security Group](AWS-Services-Images/SecurityGroup.png) |
+
+### **5. Monitoring & Alerts**
+| Service | Evidence |
+| :--- | :--- |
+| **CloudWatch Dashboard** | ![CloudWatch](AWS-Services-Images/CloudWatch.png) |
+| **CloudWatch Alarms** | ![Alarm](AWS-Services-Images/alarm.png) |
+| **SNS Notifications** | ![SNS](AWS-Services-Images/sns.png) |
+
+---
+
 ## 🛠️ Prerequisites
 
 - **AWS Account**: Free Tier eligible.
@@ -63,7 +105,7 @@ This project implements a highly available, scalable, and secure architecture:
    - Create an **Application Load Balancer** (Internet-facing, Listeners: Port 80 -> Target Group).
 3. **Launch Template**: 
    - Create a template using **Ubuntu 24.04**.
-   - **User Data**: Use the script in [ALB/ASG Setup](file:///docs/architecture.md) to auto-install Docker and run the app.
+   - **User Data**: Use the script in the project docs to auto-install Docker and run the app.
 4. **ASG**: Create an Auto Scaling Group using the Launch Template, attached to the ALB.
 
 ### 3. Frontend Hosting (S3 & CloudFront)
