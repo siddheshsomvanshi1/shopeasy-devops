@@ -15,7 +15,8 @@ pipeline {
         DB_PASSWORD    = 'shopeasy_password_123' 
         
         // App Server Details 
-        APP_SERVER_IP  = '52.205.250.123' 
+        ASG_NAME       = 'shopeasy-asg'
+        AWS_REGION     = 'us-east-1'
     } 
 
     stages {
@@ -63,17 +64,13 @@ pipeline {
             }
         }
 
-        stage('Deploy Backend to App Server') {
+        stage('Deploy Backend to ASG') {
             steps {
-                sh """ 
-                ssh -o StrictHostKeyChecking=no ubuntu@${APP_SERVER_IP} "
-                    aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com && 
-                    docker stop shopeasy-app || true && 
-                    docker rm shopeasy-app || true && 
-                    docker pull ${ECR_URI}:latest && 
-                    docker run -d --name shopeasy-app -p 8080:8080 -e DB_ENDPOINT=${DB_ENDPOINT} -e DB_USERNAME=${DB_USERNAME} -e DB_PASSWORD=${DB_PASSWORD} ${ECR_URI}:latest
-                " 
-                """ 
+                script {
+                    // Trigger ASG Instance Refresh for Zero-Downtime Deployment
+                    sh "aws autoscaling start-instance-refresh --auto-scaling-group-name ${ASG_NAME} --preferences 'MinHealthyPercentage=50'"
+                    echo "Deployment to ASG ${ASG_NAME} initiated successfully."
+                }
             } 
         }
     }
