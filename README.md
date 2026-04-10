@@ -131,6 +131,21 @@ Update these files with your specific IDs and endpoints:
 
 ## 🏗️ Local Development
 
+### **SonarQube (Code Quality)**
+1. **Install via Docker**:
+   ```bash
+   docker run -d --name sonarqube -p 9000:9000 sonarqube:community
+   ```
+2. **Setup Jenkins**:
+   - Install **SonarQube Scanner** plugin.
+   - Configure **SonarQube Server** in Jenkins System Settings.
+   - Add a Global Tool for **SonarQube Scanner** named `sonar-scanner`.
+3. **Scan**: The Jenkins pipeline automatically runs the scan during the `SonarQube Analysis` stage.
+
+---
+
+## 🏗️ Local Development
+
 ### **Run Backend Locally**
 ```bash
 cd app
@@ -154,9 +169,10 @@ npm start
 ## 🎡 CI/CD Pipeline (Jenkins)
 
 1. **Setup Jenkins**: Install on an EC2 instance or run via Docker.
-2. **Plugins**: Install `Pipeline`, `AWS Steps`, `Docker Pipeline`, `Maven Integration`.
+2. **Plugins**: Install `Pipeline`, `AWS Steps`, `Docker Pipeline`, `Maven Integration`, `SonarQube Scanner`.
 3. **Credentials**:
    - `aws-creds`: AWS IAM User keys (with S3, ECR, CloudFront, ASG permissions).
+   - `sonar-token`: SonarQube authentication token (Secret Text).
 4. **Create Job**: New Item -> Multibranch Pipeline -> Add Source (GitHub).
 
 ---
@@ -167,15 +183,6 @@ npm start
 - **Agent**: Installed on ASG instances via Launch Template.
 - **Alarms**: High CPU, Memory Usage, and 5XX Errors on ALB.
 - **Logs**: Backend logs streamed to CloudWatch Log Groups.
-
-### **SonarQube (Code Quality)**
-To run a manual scan:
-```bash
-mvn sonar:sonar \
-  -Dsonar.projectKey=shopeasy \
-  -Dsonar.host.url=http://your-sonarqube-server:9000 \
-  -Dsonar.login=your-token
-```
 
 ---
 

@@ -55,6 +55,29 @@ pipeline {
                 dir('app') {
                     sh 'mvn clean package -DskipTests'
                 }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    // This requires SonarQube Scanner configured in Jenkins Global Tool Configuration
+                    def scannerHome = tool 'sonar-scanner' 
+                    withSonarQubeEnv('sonar-server') {
+                        dir('app') {
+                            sh "${scannerHome}/bin/sonar-scanner \
+                                -Dsonar.projectKey=shopeasy-backend \
+                                -Dsonar.projectName='ShopEasy Backend' \
+                                -Dsonar.sources=src/main/java \
+                                -Dsonar.java.binaries=target/classes"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Docker Build & Push') {
+            steps {
                 sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} -f docker/Dockerfile ."
                 sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
                 sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${ECR_URI}:${IMAGE_TAG}"
